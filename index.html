@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+@import url(http://fonts.googleapis.com/css?family=Averia+Sans+Libre|Open+Sans);
+body, svg {
+  background: #222;
+  font-familye: 'Open Sans';
+}
+
+.node {
+  font: 300 16px 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  fill: #bbb;
+  opacity: 0.6
+}
+
+.node:hover {
+  fill: steelblue;
+}
+
+.immune, .weak, .strong {
+  stroke: steelblue;
+  stroke-opacity: .4;
+  fill: none;
+  pointer-events: none;
+}
+.node:hover,
+.node--source,
+.node--target {
+  font-weight: 700;
+  opacity: 1;
+}
+
+/*.node--source {
+  fill: #2ca02c;
+}
+
+.node--target {
+  fill: #d62728;
+}
+*/
+.immune--source,
+.immune--target,
+.weak--source,
+.weak--target,
+.strong--source,
+.strong--target {
+  stroke-opacity: 1;
+  stroke-width: 2px;
+}
+
+.immune--source {
+  stroke: rgba(118, 44, 74, 0.5);
+}
+
+.immune--target {
+  stroke: rgba(255, 255, 255, 0.5);
+}
+
+.weak--source {
+  stroke: rgba(255, 173, 76, 0.5);
+}
+
+.weak--target {
+  stroke: rgba(44, 160, 44, 0.5);
+}
+
+.strong--source {
+  stroke: rgba(44, 160, 44, 0.5);
+}
+
+.strong--target {
+  stroke: rgba(255, 173, 76, 0.5);
+}
+
+#typechart {
+  margin: auto;
+  text-align: center;
+  width: 1100px;
+}
+
+#details {
+  width: 350px;
+  float: left;
+  color: #f7f7f7;
+  font-family: 'Open Sans';
+  text-align: left;
+}
+
+#details h1, #details h2 {
+  text-align: left;
+  font-family: 'Averia Sans Libre';
+  color: #cecece;
+}
+
+
+#graph {
+  width: 750px;
+  float: left;
+}
+
+span.legend {
+  display: inline-block;
+  width: 30px;
+  border: 2px solid rgb(255, 255, 255);
+  border-radius: 2px;
+}
+
+.legend.super {
+  border-color: rgba(44, 160, 44, 1);
+}
+
+.legend.half {
+  border-color: rgba(255, 173, 76, 1);
+}
+
+</style>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<body>
+<div id="typechart">
+  <div id="details"><h1 title="Pokémons Type Chart">Pokémons Type Chart</h1>
+  <h2 title="Gen VI">Gen VI</h2>
+  <p>
+    Just hover a type name and it will show you strengths and weaknesses.
+  </p>
+  <table id="legend">
+    <thead>
+      <tr>
+        <th colspan="2">Legend</th>
+      </tr>
+    </thead>
+    <tr>
+      <td>Immune Against</td>
+      <td><span class="legend immune"></span></td>
+    </tr>
+    <tr>
+      <td>Super Effective</td>
+      <td><span class="legend super"></span></td>
+    </tr>
+    <tr>
+      <td>Not Very Effective</td>
+      <td><span class="legend half"></span></td>
+    </tr>
+    <tr>
+      <td>Does Not Affect</td>
+      <td><span class="legend none"></span></td>
+    </tr>
+  </table>
+  <small>Note: I still need to find a way to mark that Normal and Ghost aren't effective against each other. The system is mixins the colors right now, giving the impression that Normal is immune agaisnt Ghost but not the other way around.</small>
+  </div>
+  <div id="graph"></div>
+  <script>
+  
+  var diameter = 750,
+      radius = diameter / 2,
+      innerRadius = radius - 120;
+  
+  var cluster = d3.layout.cluster()
+      .size([360, innerRadius])
+      .sort(null)
+      .value(function(d) { return d.size; });
+  
+  var bundle = d3.layout.bundle();
+  
+  var line = d3.svg.line.radial()
+      .interpolate("bundle")
+      .tension(0.75)
+      .radius(function(d) { return d.y; })
+      .angle(function(d) { return d.x / 180 * Math.PI; });
+  
+  var svg = d3.select("#typechart > #graph").append("svg")
+      .attr("width", diameter)
+      .attr("height", diameter)
+    .append("g")
+      .attr("transform", "translate(" + radius + "," + radius + ")");
+  
+  var immune = svg.append("g").selectAll(".immune"),
+      weak = svg.append("g").selectAll(".weak");
+      strong = svg.append("g").selectAll(".strong");
+      node = svg.append("g").selectAll(".node"),
+  
+  d3.json("types.json", function(error, classes) {
+    var nodes = cluster.nodes(packageHierarchy(classes)),
+        immunes = typeImmune(nodes),
+        strengths = typeStrong(nodes),
+        weaknesses = typeWeak(nodes);
+  
+    immune = immune
+        .data(bundle(immunes))
+      .enter().append("path")
+        .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
+        .attr("class", "immune")
+        .attr("d", line);
+  
+    weak = weak
+        .data(bundle(weaknesses))
+      .enter().append("path")
+        .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
+        .attr("class", "weak")
+        .attr("d", line);
+  
+    strong = strong
+        .data(bundle(strengths))
+      .enter().append("path")
+        .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
+        .attr("class", "strong")
+        .attr("d", line);
+  
+    node = node
+        .data(nodes.filter(function(n) { return !n.children; }))
+      .enter().append("text")
+        .attr("class", "node")
+        .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+        .attr("dy", ".31em")
+        .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")" + (d.x < 180 ? "" : "rotate(180)"); })
+        .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+        .text(function(d) { return d.key; })
+        .on("mouseover", mouseovered)
+        .on("mouseout", mouseouted);
+  });
+  
+  function mouseovered(d) {
+    node
+        .each(function(n) { n.target = n.source = false; });
+  
+    immune
+        .classed("immune--target", function(l) { if (l.target === d) return l.source.source = true; })
+        .classed("immune--source", function(l) { if (l.source === d) return l.target.target = true; })
+      .filter(function(l) { return l.target === d || l.source === d; })
+        .each(function() { this.parentNode.appendChild(this); });
+  
+    weak
+        .classed("weak--target", function(l) { if (l.target === d) return l.source.source = true; })
+        .classed("weak--source", function(l) { if (l.source === d) return l.target.target = true; })
+      .filter(function(l) { return l.target === d || l.source === d; })
+        .each(function() { this.parentNode.appendChild(this); });
+  
+    strong
+        .classed("strong--target", function(l) { if (l.target === d) return l.source.source = true; })
+        .classed("strong--source", function(l) { if (l.source === d) return l.target.target = true; })
+      .filter(function(l) { return l.target === d || l.source === d; })
+        .each(function() { this.parentNode.appendChild(this); });
+  
+  
+    node
+        .classed("node--target", function(n) { return n.target; })
+        .classed("node--source", function(n) { return n.source; });
+  }
+  
+  function mouseouted(d) {
+    immune
+        .classed("immune--target", false)
+        .classed("immune--source", false);
+  
+    weak
+        .classed("weak--target", false)
+        .classed("weak--source", false);
+  
+    strong
+        .classed("strong--target", false)
+        .classed("strong--source", false);
+  
+    node
+        .classed("node--target", false)
+        .classed("node--source", false);
+  }
+  
+  d3.select(self.frameElement).style("height", diameter + "px");
+  
+  // Lazily construct the package hierarchy from class names.
+  function packageHierarchy(classes) {
+    var map = {};
+  
+    function find(name, data) {
+      var node = map[name], i;
+      if (!node) {
+        node = map[name] = data || {name: name, children: []};
+        if (name.length) {
+          node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
+          node.parent.children.push(node);
+          node.key = name.substring(i + 1);
+        }
+      }
+      return node;
+    }
+    classes.forEach(function(d) {
+      find(d.name, d);
+    });
+  
+    return map[""];
+  }
+  
+  //Make the immune links
+  function typeImmune(nodes) {
+    var map = {},
+        immunes = [];
+  
+    nodes.forEach(function(d) {
+      map[d.name] = d;
+    });
+  
+    nodes.forEach(function(d) {
+      if (d.immunes) d.immunes.forEach(function(i) {
+        immunes.push({source: map[d.name], target: map[i]});
+      });
+    });
+  
+    return immunes;
+  }
+  //Make the immune links
+  function typeWeak(nodes) {
+    var map = {},
+        weaknesses = [];
+  
+    nodes.forEach(function(d) {
+      map[d.name] = d;
+    });
+  
+    nodes.forEach(function(d) {
+      if (d.weaknesses) d.weaknesses.forEach(function(i) {
+        weaknesses.push({source: map[d.name], target: map[i]});
+      });
+    });
+  
+    return weaknesses;
+  }
+  function typeStrong(nodes) {
+    var map = {},
+        strengths = [];
+  
+    nodes.forEach(function(d) {
+      map[d.name] = d;
+    });
+  
+    nodes.forEach(function(d) {
+      if (d.strengths) d.strengths.forEach(function(i) {
+        strengths.push({source: map[d.name], target: map[i]});
+      });
+    });
+  
+    return strengths;
+  }
+  
+  </script>
+</div>
