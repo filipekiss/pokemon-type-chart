@@ -18,10 +18,17 @@ body, svg {
 }
 
 .immune, .weak, .strong {
-  stroke: steelblue;
-  stroke-opacity: .4;
+  stroke: #666;
+  stroke-opacity: 0.4;
   fill: none;
   pointer-events: none;
+  z-index: -1;
+  stroke-width: 2px;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
 .node:hover,
 .node--source,
@@ -30,46 +37,27 @@ body, svg {
   opacity: 1;
 }
 
-/*.node--source {
-  fill: #2ca02c;
-}
-
-.node--target {
-  fill: #d62728;
-}
-*/
-.immune--source,
+.does-not-affect,
 .immune--target,
-.weak--source,
+.not-very-effective-against,
 .weak--target,
-.strong--source,
+.super-effective-against,
 .strong--target {
+  stroke-width: 4px;
   stroke-opacity: 1;
-  stroke-width: 2px;
+  z-index: 99999;
 }
 
-.immune--source {
-  stroke: rgba(118, 44, 74, 0.5);
+.does-not-affect {
+  stroke: rgba(214, 39, 40, 1);
 }
 
-.immune--target {
-  stroke: rgba(255, 255, 255, 0.5);
+.not-very-effective-against {
+  stroke: rgba(255, 173, 76, 1);
 }
 
-.weak--source {
-  stroke: rgba(255, 173, 76, 0.5);
-}
-
-.weak--target {
-  stroke: rgba(44, 160, 44, 0.5);
-}
-
-.strong--source {
-  stroke: rgba(44, 160, 44, 0.5);
-}
-
-.strong--target {
-  stroke: rgba(255, 173, 76, 0.5);
+.super-effective-against {
+  stroke: rgba(44, 160, 44, 1);
 }
 
 #typechart {
@@ -114,7 +102,11 @@ span.legend {
 }
 
 .legend.none {
-  border-color: rgba(118, 44, 74, 0.5);
+  border-color: rgba(214, 39, 40, 1);
+}
+
+#is-also-effective-against {
+  display: none;
 }
 
 </style>
@@ -133,10 +125,6 @@ span.legend {
       </tr>
     </thead>
     <tr>
-      <td>Immune Against</td>
-      <td><span class="legend immune"></span></td>
-    </tr>
-    <tr>
       <td>Super Effective</td>
       <td><span class="legend super"></span></td>
     </tr>
@@ -149,9 +137,8 @@ span.legend {
       <td><span class="legend none"></span></td>
     </tr>
   </table>
-  <small>Note: I still need to find a way to mark that Normal and Ghost aren't effective against each other. The system is mixins the colors right now, giving the impression that Normal is immune agaisnt Ghost but not the other way around.</small>
   </div>
-  <div id="graph"></div>
+  <div id="graph"><div id="is-also-effective-against"><span></span> is also effective against itself</div></div>
   <script>
   
   var diameter = 750,
@@ -207,12 +194,25 @@ span.legend {
       .enter().append("path")
         .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
         .attr("class", "strong")
-        .attr("d", line);
+        .attr("d", line)
+        .attr("data-is-effective-against-self", function(d) { console.log(d[0] === d[d.length - 1], d); return (d[0] === d[d.length - 1]) });
   
     node = node
         .data(nodes.filter(function(n) { return !n.children; }))
       .enter().append("text")
-        .attr("class", "node")
+        .attr("class", function(d){
+          var css = 'node';
+          for (var i in d.immunes) {
+            css = css + " immune-"+d.immunes[i].toLowerCase()
+          }
+          for (var i in d.weaknesses) {
+            css = css + " weak-"+d.weaknesses[i].toLowerCase()
+          }
+          for (var i in d.strengths) {
+            css = css + " strong-"+d.strengths[i].toLowerCase()
+          }
+          return css;
+        })
         .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
         .attr("dy", ".31em")
         .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")" + (d.x < 180 ? "" : "rotate(180)"); })
@@ -227,41 +227,35 @@ span.legend {
         .each(function(n) { n.target = n.source = false; });
   
     immune
-        .classed("immune--target", function(l) { if (l.target === d) return l.source.source = true; })
-        .classed("immune--source", function(l) { if (l.source === d) return l.target.target = true; })
-      .filter(function(l) { return l.target === d || l.source === d; })
+        .classed("does-not-affect", function(l) { if (l.source === d) return l.target.target = true; })
+      .filter(function(l) { return l.source === d; })
         .each(function() { this.parentNode.appendChild(this); });
   
     weak
-        .classed("weak--target", function(l) { if (l.target === d) return l.source.source = true; })
-        .classed("weak--source", function(l) { if (l.source === d) return l.target.target = true; })
-      .filter(function(l) { return l.target === d || l.source === d; })
+        .classed("not-very-effective-against", function(l) { if (l.source === d) return l.target.target = true; })
+      .filter(function(l) { return l.source === d })
         .each(function() { this.parentNode.appendChild(this); });
   
     strong
-        .classed("strong--target", function(l) { if (l.target === d) return l.source.source = true; })
-        .classed("strong--source", function(l) { if (l.source === d) return l.target.target = true; })
-      .filter(function(l) { return l.target === d || l.source === d; })
+        .classed("super-effective-against", function(l) { if (l.source === d) { return l.target.target = true;} })
+      .filter(function(l) { return l.source === d; })
         .each(function() { this.parentNode.appendChild(this); });
   
   
     node
         .classed("node--target", function(n) { return n.target; })
-        .classed("node--source", function(n) { return n.source; });
+        .classed("node--source", function(n) { return n.source; })
   }
   
   function mouseouted(d) {
     immune
-        .classed("immune--target", false)
-        .classed("immune--source", false);
+        .classed("does-not-affect", false);
   
     weak
-        .classed("weak--target", false)
-        .classed("weak--source", false);
+        .classed("not-very-effective-against", false);
   
     strong
-        .classed("strong--target", false)
-        .classed("strong--source", false);
+        .classed("super-effective-against", false);
   
     node
         .classed("node--target", false)
