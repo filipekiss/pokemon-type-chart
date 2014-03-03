@@ -28,7 +28,7 @@ body, svg {
 }
 
 .node:hover {
-  fill: steelblue;
+  fill: rgba(255, 204, 0, 1);
 }
 
 .immune, .weak, .strong {
@@ -195,23 +195,13 @@ body, svg {
         .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
         .attr("class", "strong")
         .attr("d", line)
-        .attr("data-is-effective-against-self", function(d) { console.log(d[0] === d[d.length - 1], d); return (d[0] === d[d.length - 1]) });
+        .attr("data-is-effective-against-self", function(d) { return (d[0] === d[d.length - 1]) });
   
     node = node
         .data(nodes.filter(function(n) { return !n.children; }))
       .enter().append("text")
-        .attr("class", function(d){
-          var css = 'node';
-          for (var i in d.immunes) {
-            css = css + " immune-"+d.immunes[i].toLowerCase()
-          }
-          for (var i in d.weaknesses) {
-            css = css + " weak-"+d.weaknesses[i].toLowerCase()
-          }
-          for (var i in d.strengths) {
-            css = css + " strong-"+d.strengths[i].toLowerCase()
-          }
-          return css;
+        .attr("class", function(n) {
+          return 'node ' + n.name.toLowerCase();
         })
         .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
         .attr("dy", ".31em")
@@ -229,7 +219,7 @@ body, svg {
     immune
         .classed("does-not-affect", function(l) { if (l.source === d) return l.target.target = true; })
       .filter(function(l) { return l.source === d; })
-        .each(function() { this.parentNode.appendChild(this); });
+        .each(function(d) { this.parentNode.appendChild(this); });
   
     weak
         .classed("not-very-effective-against", function(l) { if (l.source === d) return l.target.target = true; })
@@ -244,7 +234,18 @@ body, svg {
   
     node
         .classed("node--target", function(n) { return n.target; })
-        .classed("node--source", function(n) { return n.source; })
+        .style('fill', function(l) { 
+          if(d.immunes.indexOf(l.name) != -1) {
+            return 'rgba(250, 0, 235, 1)';
+          }
+          if(d.weaknesses.indexOf(l.name) != -1) {
+            return 'rgba(0, 193, 248, 1)';
+          }
+          if(d.strengths.indexOf(l.name) != -1) {
+            return 'rgba(255, 204, 0, 1)';
+          }
+          return null;
+         });
   }
   
   function mouseouted(d) {
@@ -256,10 +257,11 @@ body, svg {
   
     strong
         .classed("super-effective-against", false);
-  
+
     node
         .classed("node--target", false)
-        .classed("node--source", false);
+        .style('fill', null);
+  
   }
   
   d3.select(self.frameElement).style("height", diameter + "px");
