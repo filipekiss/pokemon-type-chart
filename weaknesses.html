@@ -19,33 +19,33 @@
 <body>
 <div id="typechart">
   <div id="details"><h1 title="Pokémons Type Chart">Pokémons Type Chart</h1>
-  <h2 title="Gen VI">Gen VI Strengths</h2>
-  <h3>To view the Weaknesses chart, please, click <a href='weaknesses.html'>here</a></h3>
-  <p>
-    Just hover a type name and it will show you that type strengths.
-  </p>
-  <table id="legend">
-    <thead>
+    <h2 title="Gen VI">Gen VI Weaknesses</h2>
+    <h3>To view the Strengths chart, please, click <a href='index.html'>here</a></h3>
+    <p>
+      Just hover a type name and it will show you that type weaknesses.
+    </p>
+    <table id="legend">
+      <thead>
+        <tr>
+          <th colspan="2">Legend</th>
+        </tr>
+      </thead>
       <tr>
-        <th colspan="2">Legend</th>
+        <td>Super Effective</td>
+        <td><span class="legend super-effective-against"></span></td>
       </tr>
-    </thead>
-    <tr>
-      <td>Super Effective</td>
-      <td><span class="legend super-effective-against"></span></td>
-    </tr>
-    <tr>
-      <td>Not Very Effective</td>
-      <td><span class="legend not-very-effective-against"></span></td>
-    </tr>
-    <tr>
-      <td>Does Not Affect</td>
-      <td><span class="legend does-not-affect"></span></td>
-    </tr>
-  </table>
-  <p><small>
-    I've had help from a few friends to make this color-blind friendly. If you're having difficulties with this, please, send-me an e-mail at filipe [at] beij [dot] in so I can look into it. :) Thanks.
-  </small></p>
+      <tr>
+        <td>Not Very Effective</td>
+        <td><span class="legend not-very-effective-against"></span></td>
+      </tr>
+      <tr>
+        <td>Does Not Affect</td>
+        <td><span class="legend does-not-affect"></span></td>
+      </tr>
+    </table>
+    <p><small>
+      I've had help from a few friends to make this color-blind friendly. If you're having difficulties with this, please, send-me an e-mail at filipe [at] beij [dot] in so I can look into it. :) Thanks.
+    </small></p>
   </div>
   <div id="graph"></div>
   <script>
@@ -66,5 +66,5 @@
         .radius(function(d) { return d.y; })
         .angle(function(d) { return d.x / 180 * Math.PI; });
   </script>
-  <script src="strength-graph.js"></script>
+  <script src="weaknesses-graph.js"></script>
 </div>
