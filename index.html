@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<title>Pokémon Interactive Type Chart</title>
 <!-- Social Media Stuff -->
 <meta property="og:title" content="Pokémon Interactive Type Chart">
 <meta property="og:description" content="An interactive type chart with Pokémon Type Strengths">
@@ -37,11 +38,6 @@ body, svg {
   pointer-events: none;
   z-index: -100;
   stroke-width: 1px;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -ms-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  transition: all 0.5s ease;
 }
 .node:hover,
 .node--source,
@@ -51,26 +47,33 @@ body, svg {
 }
 
 .does-not-affect,
-.immune--target,
 .not-very-effective-against,
-.weak--target,
-.super-effective-against,
-.strong--target {
+.super-effective-against {
   stroke-width: 4px;
   stroke-opacity: 1;
   z-index: 99999;
 }
 
+.legend {
+  display: inline-block;
+  width: 30px;
+  border: 2px solid rgb(255, 255, 255);
+  border-radius: 2px;
+}
+
 .does-not-affect {
-  stroke: rgba(214, 39, 40, 1);
+  stroke: rgba(250, 0, 235, 1); 
+  border-color: rgba(250, 0, 235, 1);
 }
 
 .not-very-effective-against {
-  stroke: rgba(255, 173, 76, 1);
+  stroke: rgba(0, 193, 248, 1);
+  border-color: rgba(0, 193, 248, 1);
 }
 
 .super-effective-against {
-  stroke: rgba(44, 160, 44, 1);
+  stroke: rgba(255, 204, 0, 1);
+  border-color: rgba(255, 204, 0, 1);
 }
 
 #typechart {
@@ -99,25 +102,6 @@ body, svg {
   float: left;
 }
 
-span.legend {
-  display: inline-block;
-  width: 30px;
-  border: 2px solid rgb(255, 255, 255);
-  border-radius: 2px;
-}
-
-.legend.super {
-  border-color: rgba(44, 160, 44, 1);
-}
-
-.legend.half {
-  border-color: rgba(255, 173, 76, 1);
-}
-
-.legend.none {
-  border-color: rgba(214, 39, 40, 1);
-}
-
 #is-also-effective-against {
   display: none;
 }
@@ -139,17 +123,20 @@ span.legend {
     </thead>
     <tr>
       <td>Super Effective</td>
-      <td><span class="legend super"></span></td>
+      <td><span class="legend super-effective-against"></span></td>
     </tr>
     <tr>
       <td>Not Very Effective</td>
-      <td><span class="legend half"></span></td>
+      <td><span class="legend not-very-effective-against"></span></td>
     </tr>
     <tr>
       <td>Does Not Affect</td>
-      <td><span class="legend none"></span></td>
+      <td><span class="legend does-not-affect"></span></td>
     </tr>
   </table>
+  <p><small>
+    I've had help from a few friends to make this color-blind friendly. If you're having difficulties with this, please, send-me an e-mail at filipe [at] beij [dot] in so I can look into it. :) Thanks.
+  </small></p>
   </div>
   <div id="graph"><div id="is-also-effective-against"><span></span> is also effective against itself</div></div>
   <script>
