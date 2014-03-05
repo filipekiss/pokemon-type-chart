@@ -31,16 +31,16 @@
         </tr>
       </thead>
       <tr>
-        <td>Double Damage</td>
-        <td><span class="legend super-effective-against"></span></td>
+        <td>Takes Double Damage</td>
+        <td><span class="legend is-weak-against"></span></td>
       </tr>
       <tr>
-        <td>Half Damage</td>
-        <td><span class="legend not-very-effective-against"></span></td>
+        <td>Takes Half Damage</td>
+        <td><span class="legend resists-against"></span></td>
       </tr>
       <tr>
         <td>Is Immune</td>
-        <td><span class="legend does-not-affect"></span></td>
+        <td><span class="legend is-immune"></span></td>
       </tr>
       <tr>
         <td colspan="2">
@@ -70,6 +70,16 @@
         .tension(0.75)
         .radius(function(d) { return d.y; })
         .angle(function(d) { return d.x / 180 * Math.PI; });
+    window.colorPath = function(d, l, type) {
+      var type = type || 'strong';
+      if (type == 'strong') {
+        if (l.target === d) return l.source.target = true;
+      }
+      if (type == 'weak') {
+        if (l.target === d) return l.source.target = true;
+      }
+      return false;
+    }
   </script>
   <script src="weaknesses-graph.js"></script>
 </div>

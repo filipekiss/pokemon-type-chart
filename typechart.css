@@ -31,7 +31,10 @@ body, svg {
 
 .does-not-affect,
 .not-very-effective-against,
-.super-effective-against {
+.super-effective-against,
+.is-weak-against,
+.resists-against, 
+.is-immune {
   stroke-width: 4px;
   stroke-opacity: 1;
   z-index: 99999;
@@ -55,6 +58,29 @@ body, svg {
 }
 
 .super-effective-against {
+  stroke: rgba(255, 204, 0, 1);
+  border-color: rgba(255, 204, 0, 1);
+}
+
+.is-weak-against,
+.resists-against, 
+.is-immune {
+  border-style: dashed;
+  border-radius: 0;
+  stroke-dasharray: 5 5;
+}
+
+.is-immune {
+  stroke: rgba(250, 0, 235, 1); 
+  border-color: rgba(250, 0, 235, 1);
+}
+
+.resists-against {
+  stroke: rgba(0, 193, 248, 1);
+  border-color: rgba(0, 193, 248, 1);
+}
+
+.is-weak-against {
   stroke: rgba(255, 204, 0, 1);
   border-color: rgba(255, 204, 0, 1);
 }

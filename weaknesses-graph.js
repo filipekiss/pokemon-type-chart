@@ -57,17 +57,17 @@ function mouseovered(d) {
       .each(function(n) { n.target = n.source = false; });
 
   immune
-      .classed("does-not-affect", function(l) { if (l.target === d) return l.source.target = true; })
+      .classed("is-immune", function(l) { return window.colorPath(d, l, 'weak'); } )
     .filter(function(l) { return l.target === d; })
       .each(function(d) { this.parentNode.appendChild(this); });
 
   weak
-      .classed("not-very-effective-against", function(l) { if (l.target === d) return l.source.target = true; })
+      .classed("resists-against", function(l) { return window.colorPath(d, l, 'weak'); } )
     .filter(function(l) { return l.target === d })
       .each(function() { this.parentNode.appendChild(this); });
 
   strong
-      .classed("super-effective-against", function(l) { if (l.target === d) { return l.source.target = true;} })
+      .classed("is-weak-against", function(l) { return window.colorPath(d, l, 'weak'); } )
     .filter(function(l) { return l.target === d; })
       .each(function() { this.parentNode.appendChild(this); });
 
@@ -90,13 +90,13 @@ function mouseovered(d) {
 
 function mouseouted(d) {
   immune
-      .classed("does-not-affect", false);
+      .classed("is-immune", false);
 
   weak
-      .classed("not-very-effective-against", false);
+      .classed("resists-against", false);
 
   strong
-      .classed("super-effective-against", false);
+      .classed("is-weak-against", false);
 
   node
       .classed("node--target", false)
