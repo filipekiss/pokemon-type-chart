@@ -35,7 +35,7 @@ d3.json("types.json", function(error, classes) {
       .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
       .attr("class", "strong")
       .attr("d", line)
-      .attr("data-is-effective-against-self", function(d) { return (d[0] === d[d.length - 1]) });
+      .attr("data-is-effective-against-self", function(d) { return (d[0] === d[d.length - 1]); });
 
   node = node
       .data(nodes.filter(function(n) { return !n.children; }))
@@ -48,60 +48,71 @@ d3.json("types.json", function(error, classes) {
       .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")" + (d.x < 180 ? "" : "rotate(180)"); })
       .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
       .text(function(d) { return d.key; })
-      .on("mouseover", mouseovered)
-      .on("mouseout", mouseouted);
+      .on("click", activate);
 });
 
-function mouseovered(d) {
+function activate(d) {
+  
+
+  if (window.dualType.size() > 2) {
+    window.dualType = {
+      size: function() {
+        var size = 0, key;
+        for (key in this) {
+            if (this.hasOwnProperty(key)) size++;
+        }
+        return size;
+      }
+    };
+    node.each(function(n) { n.target = n.source = false; }).attr("class", function(n) {
+        return 'node ' + n.name.toLowerCase();
+      });
+  }
+
+  if (window.dualType[d.name] !== undefined) {
+    delete window.dualType[d.name];
+  }
+
+  window.dualType[d.name] = d;
+
+  var idx = 1;
+  document.getElementById("type1").innerHTML = "";
+  document.getElementById("type2").innerHTML = "";
+  for (type in window.dualType) {
+    if (type !== "size") {
+      console.log(type, idx);
+      document.getElementById("type" + idx).innerHTML = type;
+      idx++;
+    }
+  }
+
   node
       .each(function(n) { n.target = n.source = false; });
 
+
+
   immune
-      .classed("is-immune", function(l) { return window.colorPath(d, l, 'weak'); } )
+      .classed("is-immune", function(l) { return window.colorPath(window.dualType, l, 'weak'); } )
     .filter(function(l) { return l.target === d; })
       .each(function(d) { this.parentNode.appendChild(this); });
 
   weak
-      .classed("resists-against", function(l) { return window.colorPath(d, l, 'weak'); } )
-    .filter(function(l) { return l.target === d })
+      .classed("resists-against", function(l) { return window.colorPath(window.dualType, l, 'weak'); } )
+      .filter(function(l) { return l.target === d; })
       .each(function() { this.parentNode.appendChild(this); });
 
   strong
-      .classed("is-weak-against", function(l) { return window.colorPath(d, l, 'weak'); } )
+      .classed("is-weak-against", function(l) { return window.colorPath(window.dualType, l, 'weak'); } )
     .filter(function(l) { return l.target === d; })
       .each(function() { this.parentNode.appendChild(this); });
 
 
   node
+      .classed("node--active", function(target) { return (target === d) || this.classList.contains("node--active") })
       .classed("node--target", function(n) { return n.target; })
-      .style('fill', function(l) {
-        if(l.immunes.indexOf(d.name) != -1) {
-          return 'rgba(250, 0, 235, 1)';
-        }
-        if(l.weaknesses.indexOf(d.name) != -1) {
-          return 'rgba(0, 193, 248, 1)';
-        }
-        if(l.strengths.indexOf(d.name) != -1) {
-          return 'rgba(255, 204, 0, 1)';
-        }
-        return null;
-       });
-}
-
-function mouseouted(d) {
-  immune
-      .classed("is-immune", false);
-
-  weak
-      .classed("resists-against", false);
-
-  strong
-      .classed("is-weak-against", false);
-
-  node
-      .classed("node--target", false)
-      .style('fill', null);
-
+      .classed("immune-node", function(target, l) { return (this.classList.contains('immune-node') || target.immunes.indexOf(d.name) != -1) } )
+      .classed("weaknesses-node", function(target) { return (this.classList.contains('weaknesses-node') || target.weaknesses.indexOf(d.name) != -1) } )
+      .classed("strengths-node", function(target) { return (this.classList.contains('strengths-node') || target.strengths.indexOf(d.name) != -1) } );
 }
 
 d3.select(self.frameElement).style("height", diameter + "px");

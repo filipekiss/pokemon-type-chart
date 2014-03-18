@@ -15,42 +15,42 @@
 <meta name="twitter:description" content="An interactive type chart with Pokémon Type Strengths">
 <meta name="twitter:image:src" content="http://i.imgur.com/drWhvRJ.png"/>
 <link rel="stylesheet" href="typechart.css">
-<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="d3.v3.min.js"></script>
 <body>
 <div id="typechart">
   <div id="details"><h1 title="Pokémons Type Chart">Pokémons Type Chart</h1>
-    <h2 title="Gen VI">Gen VI Weaknesses</h2>
-    <h3>To view the Strengths chart, please, click <a href='index.html'>here</a></h3>
-    <p>
-      Just hover a type name and it will show you that type weaknesses.
-    </p>
-    <table id="legend">
-      <thead>
-        <tr>
-          <th colspan="2">Legend</th>
-        </tr>
-      </thead>
+  <h2 title="Gen VI">Gen VI Strengths</h2>
+  <h3>To view the Weaknesses chart, please, click <a href='index.html'>here</a></h3>
+  <p>
+    Just hover a type name and it will show you that type strengths.
+  </p>
+  <table id="legend">
+    <thead>
       <tr>
-        <td>Takes Double Damage</td>
-        <td><span class="legend is-weak-against"></span></td>
+        <th colspan="2">Legend</th>
       </tr>
-      <tr>
-        <td>Takes Half Damage</td>
-        <td><span class="legend resists-against"></span></td>
-      </tr>
-      <tr>
-        <td>Is Immune</td>
-        <td><span class="legend is-immune"></span></td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          If a label becomes colored, it will cause damage to itself, following the rules above.
-        </td>
-      </tr>
-    </table>
-    <p><small>
-      I've had help from a few friends to make this color-blind friendly. If you're having difficulties with this, please, send-me an e-mail at filipe [at] beij [dot] in so I can look into it. :) Thanks.
-    </small></p>
+    </thead>
+    <tr>
+      <td>Super Effective</td>
+      <td><span class="legend super-effective-against"></span></td>
+    </tr>
+    <tr>
+      <td>Not Very Effective</td>
+      <td><span class="legend not-very-effective-against"></span></td>
+    </tr>
+    <tr>
+      <td>Does Not Affect</td>
+      <td><span class="legend does-not-affect"></span></td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        If a label becomes colored, it will cause damage to itself, following the rules above.
+      </td>
+    </tr>
+  </table>
+  <p><small>
+    I've had help from a few friends to make this color-blind friendly. If you're having difficulties with this, please, send-me an e-mail at filipe [at] beij [dot] in so I can look into it. :) Thanks.
+  </small></p>
   </div>
   <div id="graph"></div>
   <script>
@@ -70,6 +70,7 @@
         .tension(0.75)
         .radius(function(d) { return d.y; })
         .angle(function(d) { return d.x / 180 * Math.PI; });
+
     window.colorPath = function(d, l, type) {
       var type = type || 'strong';
       if (type == 'strong') {
@@ -81,7 +82,7 @@
       return false;
     }
   </script>
-  <script src="weaknesses-graph.js"></script>
+  <script src="strength-graph.js"></script>
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

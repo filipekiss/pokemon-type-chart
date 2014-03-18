@@ -10,7 +10,7 @@ body, svg {
   opacity: 0.6
 }
 
-.node:hover {
+.node:hover, .node--active {
   fill: rgba(255, 255, 255, 1);
 }
 
@@ -24,7 +24,8 @@ body, svg {
 }
 .node:hover,
 .node--source,
-.node--target {
+.node--target,
+.node--active {
   font-weight: 700;
   opacity: 1;
 }
@@ -101,7 +102,7 @@ body, svg {
 
 #details h1, #details h2 {
   text-align: left;
-  font-family: 'Averia Sans Libre';
+  font-family: 'Open Sans';
   color: #cecece;
 }
 
@@ -122,4 +123,14 @@ a:hover {
 
 #is-also-effective-against {
   display: none;
+}
+
+.immune-node {
+  fill: rgba(250, 0, 235, 1);
+}
+.weaknesses-node {
+  fill: rgba(0, 193, 248, 1);
+}
+.strengths-node {
+  fill: rgba(255, 204, 0, 1);
 }
