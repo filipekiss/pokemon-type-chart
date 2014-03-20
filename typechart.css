@@ -65,7 +65,10 @@ body, svg {
 
 .is-weak-against,
 .resists-against, 
-.is-immune {
+.is-immune,
+.double-strengths-node,
+.double-weaknesses-node,
+.legend-dash {
   border-style: dashed;
   border-radius: 0;
   stroke-dasharray: 5 5;
@@ -131,6 +134,14 @@ a:hover {
 .weaknesses-node {
   fill: rgba(0, 193, 248, 1);
 }
+.double-weaknesses-node {
+  fill: rgba(0, 255, 44, 1);
+  border-color: rgba(0, 255, 44, 1);
+}
 .strengths-node {
   fill: rgba(255, 204, 0, 1);
+}
+.double-strengths-node {
+  fill: rgba(255, 72, 0, 1);
+  border-color: rgba(255, 72, 0, 1);
 }

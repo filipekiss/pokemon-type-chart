@@ -21,6 +21,7 @@
   <div id="details"><h1 title="Pokémons Type Chart">Pokémons Type Chart</h1>
     <h2 title="Gen VI">Gen VI Weaknesses</h2>
     <h3>To view the Strengths chart, please, click <a href='strengths.html'>here</a></h3>
+    <h3><a href="about.html">More about the project</a></h3>
     <p>
       Just hover a type name and it will show you that type weaknesses.
     </p>
@@ -34,6 +35,7 @@
         <td id="type1"></td>
         <td id="type2"></td>
       </tr>
+      <tr><a href="#" onclick="reset(); return false;">Reset</a></tr>
     </table>
     <table id="legend">
       <thead>
@@ -52,6 +54,19 @@
       <tr>
         <td>Is Immune</td>
         <td><span class="legend is-immune"></span></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <small>If the label becomes colored, the following rules may apply</small>
+        </td>
+      </tr>
+      <tr>
+        <td>Takes 4x Damage</td>
+        <td><span class="legend double-strengths-node"></span></td>
+      </tr>
+      <tr>
+        <td>Takes 1/4 Damage</td>
+        <td><span class="legend double-weaknesses-node"></span></td>
       </tr>
       <tr>
         <td colspan="2">
@@ -94,17 +109,6 @@
         }
       }
     }
-
-    window.dualType = {
-      size: function() {
-        var size = 0, key;
-        for (key in this) {
-            if (this.hasOwnProperty(key)) size++;
-        }
-        return size;
-      }
-    };
-
   </script>
   <script src="weaknesses-graph.js"></script>
   <script>

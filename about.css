@@ -1,0 +1,20 @@
+@import url(http://fonts.googleapis.com/css?family=Averia+Sans+Libre|Open+Sans);
+body {
+  background: #222;
+  font-family: 'Open Sans';
+  color: #bbb;
+}
+
+#about {
+    width: 40%;
+    margin: 0 auto;
+    text-align: justify;
+}
+
+.text-center {
+    text-align: center;
+}
+
+a {
+    color: #bbb;
+}
