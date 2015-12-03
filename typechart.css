@@ -129,7 +129,7 @@ a:hover {
 }
 
 .immune-node {
-  fill: rgba(250, 0, 235, 1);
+  fill: rgba(250, 0, 235, 1) !important;
 }
 .weaknesses-node {
   fill: rgba(0, 193, 248, 1);
