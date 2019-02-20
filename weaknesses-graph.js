@@ -1,15 +1,17 @@
-var svg = d3.select("#typechart > #graph").append("svg")
-    .attr("width", diameter)
-    .attr("height", diameter)
-    .append("g")
-    .attr("transform", "translate(" + radius + "," + radius + ")");
+var svg = d3
+    .select('#typechart > #graph')
+    .append('svg')
+    .attr('width', diameter)
+    .attr('height', diameter)
+    .append('g')
+    .attr('transform', 'translate(' + radius + ',' + radius + ')');
 
-var immune = svg.append("g").selectAll(".immune"),
-    weak = svg.append("g").selectAll(".weak"),
-    strong = svg.append("g").selectAll(".strong"),
-    node = svg.append("g").selectAll(".node");
+var immune = svg.append('g').selectAll('.immune'),
+    weak = svg.append('g').selectAll('.weak'),
+    strong = svg.append('g').selectAll('.strong'),
+    node = svg.append('g').selectAll('.node');
 
-d3.json("types.json", function(error, classes) {
+d3.json('types.json', function(error, classes) {
     window.nodes = cluster.nodes(packageHierarchy(classes));
     window.immunes = typeImmune(nodes);
     window.strengths = typeStrong(nodes);
@@ -17,76 +19,105 @@ d3.json("types.json", function(error, classes) {
 
     window.immune = immune
         .data(bundle(window.immunes))
-        .enter().append("path")
+        .enter()
+        .append('path')
         .each(function(d) {
-            d.source = d[0], d.target = d[d.length - 1];
+            (d.source = d[0]), (d.target = d[d.length - 1]);
         })
-        .attr("class", "immune")
-        .attr("d", line);
+        .attr('class', 'immune')
+        .attr('data-from', function(d) {
+            return d.source.name;
+        })
+        .attr('data-to', function(d) {
+            return d.target.name;
+        })
+        .attr('d', line);
 
     window.weak = weak
         .data(bundle(window.weaknesses))
-        .enter().append("path")
+        .enter()
+        .append('path')
         .each(function(d) {
-            d.source = d[0], d.target = d[d.length - 1];
+            (d.source = d[0]), (d.target = d[d.length - 1]);
         })
-        .attr("class", "weak")
-        .attr("d", line);
+        .attr('class', 'weak')
+        .attr('data-from', function(d) {
+            return d.source.name;
+        })
+        .attr('data-to', function(d) {
+            return d.target.name;
+        })
+        .attr('d', line);
 
     window.strong = strong
         .data(bundle(window.strengths))
-        .enter().append("path")
+        .enter()
+        .append('path')
         .each(function(d) {
-            d.source = d[0], d.target = d[d.length - 1];
+            (d.source = d[0]), (d.target = d[d.length - 1]);
         })
-        .attr("class", "strong")
-        .attr("d", line)
-        .attr("data-is-effective-against-self", function(d) {
-            return (d[0] === d[d.length - 1]);
+        .attr('class', 'strong')
+        .attr('data-from', function(d) {
+            return d.source.name;
+        })
+        .attr('data-to', function(d) {
+            return d.target.name;
+        })
+        .attr('d', line)
+        .attr('data-is-effective-against-self', function(d) {
+            return d[0] === d[d.length - 1];
         });
 
     window.node = node
-        .data(window.nodes.filter(function(n) {
-            return !n.children;
-        }))
-        .enter().append("text")
-        .attr("class", function(n) {
+        .data(
+            window.nodes.filter(function(n) {
+                return !n.children;
+            })
+        )
+        .enter()
+        .append('text')
+        .attr('class', function(n) {
             return 'node ' + n.name.toLowerCase();
         })
-        .attr("dx", function(d) {
+        .attr('dx', function(d) {
             return d.x < 180 ? 8 : -8;
         })
-        .attr("dy", ".31em")
-        .attr("transform", function(d) {
-            return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")" + (d.x < 180 ? "" : "rotate(180)");
+        .attr('dy', '.31em')
+        .attr('transform', function(d) {
+            return (
+                'rotate(' +
+                (d.x - 90) +
+                ')translate(' +
+                d.y +
+                ')' +
+                (d.x < 180 ? '' : 'rotate(180)')
+            );
         })
-        .style("text-anchor", function(d) {
-            return d.x < 180 ? "start" : "end";
+        .style('text-anchor', function(d) {
+            return d.x < 180 ? 'start' : 'end';
         })
         .text(function(d) {
             return d.key;
         })
-        .on("click", activate);
+        .on('click', activate);
 });
 
 function reset() {
-    window.immune
-        .classed("is-immune", false);
+    const classesToRemove = 'is-immune resists-against is-weak-against';
+    window.immune.classed(classesToRemove, false);
 
-    window.weak
-        .classed("resists-against", false);
+    window.weak.classed(classesToRemove, false);
 
-    window.strong
-        .classed("is-weak-against", false);
+    window.strong.classed(classesToRemove, false);
 
     window.node
-        .classed("node--target", false)
-        .classed("immune-node", false)
-        .classed("weaknesses-node", false)
-        .classed("strengths-node", false)
-        .classed("double-weaknesses-node", false)
-        .classed("double-strengths-node", false)
-        .classed("node--active", false);
+        .classed('node--target', false)
+        .classed('immune-node', false)
+        .classed('weaknesses-node', false)
+        .classed('strengths-node', false)
+        .classed('double-weaknesses-node', false)
+        .classed('double-strengths-node', false)
+        .classed('node--active', false);
 
     window.dualType = {
         size: function() {
@@ -96,7 +127,7 @@ function reset() {
                 if (this.hasOwnProperty(key)) size++;
             }
             return size;
-        }
+        },
     };
     window.dualTypeIdx = [];
 
@@ -104,8 +135,6 @@ function reset() {
 }
 
 function activate(d) {
-
-
     if (window.dualType.size() > 2) {
         window.dualType = {
             size: function() {
@@ -115,14 +144,16 @@ function activate(d) {
                     if (this.hasOwnProperty(key)) size++;
                 }
                 return size;
-            }
+            },
         };
         window.dualTypeIdx = [];
-        window.node.each(function(n) {
-            n.target = n.source = false;
-        }).attr("class", function(n) {
-            return 'node ' + n.name.toLowerCase();
-        });
+        window.node
+            .each(function(n) {
+                n.target = n.source = false;
+            })
+            .attr('class', function(n) {
+                return 'node ' + n.name.toLowerCase();
+            });
     }
 
     if (window.dualType[d.name] !== undefined) {
@@ -133,24 +164,21 @@ function activate(d) {
     window.dualTypeIdx.push(d);
 
     var idx = 1;
-    document.getElementById("type1").innerHTML = "";
-    document.getElementById("type2").innerHTML = "";
+    document.getElementById('type1').innerHTML = '';
+    document.getElementById('type2').innerHTML = '';
     for (var type in window.dualType) {
-        if (type !== "size") {
-            document.getElementById("type" + idx).innerHTML = type;
+        if (type !== 'size') {
+            document.getElementById('type' + idx).innerHTML = type;
             idx++;
         }
     }
 
-    window.node
-        .each(function(n) {
-            n.target = n.source = false;
-        });
-
-
+    window.node.each(function(n) {
+        n.target = n.source = false;
+    });
 
     window.immune
-        .classed("is-immune", function(l) {
+        .classed('is-immune', function(l) {
             return window.colorPath(window.dualType, l, 'weak');
         })
         .filter(function(l) {
@@ -161,8 +189,18 @@ function activate(d) {
         });
 
     window.weak
-        .classed("resists-against", function(l) {
+        .classed('resists-against', function(l) {
             return window.colorPath(window.dualType, l, 'weak');
+        })
+        .classed('double-resists', function(link) {
+            return (
+                !!window.dualTypeIdx[0] &&
+                !!window.dualTypeIdx[1] &&
+                link.source.weaknesses.indexOf(window.dualTypeIdx[0].name) !==
+                    -1 &&
+                link.source.weaknesses.indexOf(window.dualTypeIdx[1].name) !==
+                    -1
+            );
         })
         .filter(function(l) {
             return l.target === d;
@@ -172,8 +210,39 @@ function activate(d) {
         });
 
     window.strong
-        .classed("is-weak-against", function(l) {
+        .classed('is-weak-against', function(l) {
             return window.colorPath(window.dualType, l, 'weak');
+        })
+        .classed('is-immune', function(link) {
+            const hasDualType =
+                !!window.dualTypeIdx[0] && !!window.dualTypeIdx[1];
+            if (!hasDualType) {
+                return false;
+            }
+            const type1 = window.dualTypeIdx[0];
+            const type2 = window.dualTypeIdx[1];
+            const isRelevantType =
+                link.source.name === type1.name ||
+                link.target.name === type1.name ||
+                link.source.name === type2.name ||
+                link.target.name === type2.name;
+            if (!isRelevantType) {
+                return false;
+            }
+            const hasImmune =
+                link.source.immunes.indexOf(window.dualTypeIdx[0].name) !==
+                    -1 ||
+                link.source.immunes.indexOf(window.dualTypeIdx[1].name) !== -1;
+            return hasImmune;
+        })
+        .classed('double-damage', function(link) {
+            return (
+                !!window.dualTypeIdx[0] &&
+                !!window.dualTypeIdx[1] &&
+                link.source.strengths.indexOf(window.dualTypeIdx[0].name) !==
+                    -1 &&
+                link.source.strengths.indexOf(window.dualTypeIdx[1].name) !== -1
+            );
         })
         .filter(function(l) {
             return l.target === d;
@@ -182,32 +251,47 @@ function activate(d) {
             this.parentNode.appendChild(this);
         });
 
-
     window.node
-        .classed("node--active", function(target) {
-            return (target === d) || this.classList.contains("node--active");
+        .classed('node--active', function(target) {
+            return target === d || this.classList.contains('node--active');
         })
-        .classed("node--target", function(n) {
+        .classed('node--target', function(n) {
             return n.target;
         })
-        .classed("immune-node", function(target, l) {
-            return (this.classList.contains('immune-node') || target.immunes.indexOf(d.name) != -1);
+        .classed('immune-node', function(target, l) {
+            return (
+                this.classList.contains('immune-node') ||
+                target.immunes.indexOf(d.name) != -1
+            );
         })
-        .classed("weaknesses-node", function(target) {
-            return (this.classList.contains('weaknesses-node') || target.weaknesses.indexOf(d.name) != -1);
+        .classed('weaknesses-node', function(target) {
+            return (
+                this.classList.contains('weaknesses-node') ||
+                target.weaknesses.indexOf(d.name) != -1
+            );
         })
-        .classed("strengths-node", function(target) {
-            return (target.strengths.indexOf(d.name) != -1);
+        .classed('strengths-node', function(target) {
+            return target.strengths.indexOf(d.name) != -1;
         })
-        .classed("double-strengths-node", function(target) {
-            return ( !! window.dualTypeIdx[0] && !! window.dualTypeIdx[1] && target.strengths.indexOf(window.dualTypeIdx[0].name) !== -1 && target.strengths.indexOf(window.dualTypeIdx[1].name) !== -1);
+        .classed('double-strengths-node', function(target) {
+            return (
+                !!window.dualTypeIdx[0] &&
+                !!window.dualTypeIdx[1] &&
+                target.strengths.indexOf(window.dualTypeIdx[0].name) !== -1 &&
+                target.strengths.indexOf(window.dualTypeIdx[1].name) !== -1
+            );
         })
-        .classed("double-weaknesses-node", function(target) {
-            return ( !! window.dualTypeIdx[0] && !! window.dualTypeIdx[1] && target.weaknesses.indexOf(window.dualTypeIdx[0].name) !== -1 && target.weaknesses.indexOf(window.dualTypeIdx[1].name) !== -1);
+        .classed('double-weaknesses-node', function(target) {
+            return (
+                !!window.dualTypeIdx[0] &&
+                !!window.dualTypeIdx[1] &&
+                target.weaknesses.indexOf(window.dualTypeIdx[0].name) !== -1 &&
+                target.weaknesses.indexOf(window.dualTypeIdx[1].name) !== -1
+            );
         });
 }
 
-d3.select(self.frameElement).style("height", diameter + "px");
+d3.select(self.frameElement).style('height', diameter + 'px');
 
 // Lazily construct the package hierarchy from class names.
 function packageHierarchy(classes) {
@@ -219,10 +303,12 @@ function packageHierarchy(classes) {
         if (!node) {
             node = map[name] = data || {
                 name: name,
-                children: []
+                children: [],
             };
             if (name.length) {
-                node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
+                node.parent = find(
+                    name.substring(0, (i = name.lastIndexOf('.')))
+                );
                 node.parent.children.push(node);
                 node.key = name.substring(i + 1);
             }
@@ -233,7 +319,7 @@ function packageHierarchy(classes) {
         find(d.name, d);
     });
 
-    return map[""];
+    return map[''];
 }
 
 //Make the immune links
@@ -246,12 +332,13 @@ function typeImmune(nodes) {
     });
 
     nodes.forEach(function(d) {
-        if (d.immunes) d.immunes.forEach(function(i) {
-            immunes.push({
-                source: map[d.name],
-                target: map[i]
+        if (d.immunes)
+            d.immunes.forEach(function(i) {
+                immunes.push({
+                    source: map[d.name],
+                    target: map[i],
+                });
             });
-        });
     });
 
     return immunes;
@@ -266,12 +353,13 @@ function typeWeak(nodes) {
     });
 
     nodes.forEach(function(d) {
-        if (d.weaknesses) d.weaknesses.forEach(function(i) {
-            weaknesses.push({
-                source: map[d.name],
-                target: map[i]
+        if (d.weaknesses)
+            d.weaknesses.forEach(function(i) {
+                weaknesses.push({
+                    source: map[d.name],
+                    target: map[i],
+                });
             });
-        });
     });
 
     return weaknesses;
@@ -286,12 +374,13 @@ function typeStrong(nodes) {
     });
 
     nodes.forEach(function(d) {
-        if (d.strengths) d.strengths.forEach(function(i) {
-            strengths.push({
-                source: map[d.name],
-                target: map[i]
+        if (d.strengths)
+            d.strengths.forEach(function(i) {
+                strengths.push({
+                    source: map[d.name],
+                    target: map[i],
+                });
             });
-        });
     });
 
     return strengths;
