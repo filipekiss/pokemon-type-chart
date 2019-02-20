@@ -78,8 +78,8 @@ svg {
 .double-strengths-node,
 .double-weaknesses-node,
 .legend-dash {
-    border-style: dashed;
-    border-radius: 0;
+    border-style: solid;
+    border-radius: 10px;
     stroke-dasharray: 1000;
     stroke-dashoffset: -500;
     animation-name: dash;
