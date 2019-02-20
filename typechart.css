@@ -1,147 +1,176 @@
 @import url(http://fonts.googleapis.com/css?family=Averia+Sans+Libre|Open+Sans);
-body, svg {
-  background: #222;
-  font-familye: 'Open Sans';
+body,
+svg {
+    background: #222;
+    font-familye: 'Open Sans';
 }
 
 .node {
-  font: 300 16px 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
-  fill: #bbb;
-  opacity: 0.6
+    font: 300 16px 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    fill: #bbb;
+    opacity: 0.6;
 }
 
-.node:hover, .node--active {
-  fill: rgba(255, 255, 255, 1);
+.node:hover,
+.node--active {
+    fill: rgba(255, 255, 255, 1);
 }
 
-.immune, .weak, .strong {
-  stroke: #666;
-  stroke-opacity: 0.1;
-  fill: none;
-  pointer-events: none;
-  z-index: -100;
-  stroke-width: 1px;
+.immune,
+.weak,
+.strong {
+    stroke: #666;
+    stroke-opacity: 0.1;
+    fill: none;
+    pointer-events: none;
+    z-index: -100;
+    stroke-width: 1px;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    animation-name: dash;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
 }
 .node:hover,
 .node--source,
 .node--target,
 .node--active {
-  font-weight: 700;
-  opacity: 1;
+    font-weight: 700;
+    opacity: 1;
 }
 
 .does-not-affect,
 .not-very-effective-against,
 .super-effective-against,
 .is-weak-against,
-.resists-against, 
+.resists-against,
 .is-immune {
-  stroke-width: 4px;
-  stroke-opacity: 1;
-  z-index: 99999;
+    stroke-width: 4px;
+    stroke-opacity: 1;
+    z-index: 99999;
 }
 
 .legend {
-  display: inline-block;
-  width: 30px;
-  border: 2px solid rgb(255, 255, 255);
-  border-radius: 2px;
+    display: inline-block;
+    width: 30px;
+    border: 2px solid rgb(255, 255, 255);
+    border-radius: 2px;
 }
 
 .does-not-affect {
-  stroke: rgba(250, 0, 235, 1); 
-  border-color: rgba(250, 0, 235, 1);
+    stroke: rgba(250, 0, 235, 1);
+    border-color: rgba(250, 0, 235, 1);
 }
 
 .not-very-effective-against {
-  stroke: rgba(0, 193, 248, 1);
-  border-color: rgba(0, 193, 248, 1);
+    stroke: rgba(0, 193, 248, 1);
+    border-color: rgba(0, 193, 248, 1);
 }
 
 .super-effective-against {
-  stroke: rgba(255, 204, 0, 1);
-  border-color: rgba(255, 204, 0, 1);
+    stroke: rgba(255, 204, 0, 1);
+    border-color: rgba(255, 204, 0, 1);
 }
 
 .is-weak-against,
-.resists-against, 
+.resists-against,
 .is-immune,
 .double-strengths-node,
 .double-weaknesses-node,
 .legend-dash {
-  border-style: dashed;
-  border-radius: 0;
-  stroke-dasharray: 5 5;
-}
-
-.is-immune {
-  stroke: rgba(250, 0, 235, 1); 
-  border-color: rgba(250, 0, 235, 1);
+    border-style: dashed;
+    border-radius: 0;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: -500;
+    animation-name: dash;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
 }
 
 .resists-against {
-  stroke: rgba(0, 193, 248, 1);
-  border-color: rgba(0, 193, 248, 1);
+    stroke: rgba(0, 193, 248, 1);
+    border-color: rgba(0, 193, 248, 1);
 }
 
 .is-weak-against {
-  stroke: rgba(255, 204, 0, 1);
-  border-color: rgba(255, 204, 0, 1);
+    stroke: rgba(255, 204, 0, 1);
+    border-color: rgba(255, 204, 0, 1);
+}
+
+.is-immune {
+    stroke: rgba(250, 0, 235, 1);
+    border-color: rgba(250, 0, 235, 1);
 }
 
 #typechart {
-  margin: auto;
-  text-align: center;
-  width: 1100px;
+    margin: auto;
+    text-align: center;
+    width: 1100px;
 }
 
 #details {
-  width: 350px;
-  float: left;
-  color: #f7f7f7;
-  font-family: 'Open Sans';
-  text-align: left;
+    width: 350px;
+    float: left;
+    color: #f7f7f7;
+    font-family: 'Open Sans';
+    text-align: left;
 }
 
-#details h1, #details h2 {
-  text-align: left;
-  font-family: 'Open Sans';
-  color: #cecece;
+#details h1,
+#details h2 {
+    text-align: left;
+    font-family: 'Open Sans';
+    color: #cecece;
 }
 
-a, a:visited, a:active {
-  color: rgba(0, 193, 248, 1);
-  text-decoration: none;
+a,
+a:visited,
+a:active {
+    color: rgba(0, 193, 248, 1);
+    text-decoration: none;
 }
 
 a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
-
 #graph {
-  width: 750px;
-  float: left;
+    width: 750px;
+    float: left;
 }
 
 #is-also-effective-against {
-  display: none;
+    display: none;
 }
 
 .immune-node {
-  fill: rgba(250, 0, 235, 1) !important;
+    fill: rgba(250, 0, 235, 1) !important;
 }
 .weaknesses-node {
-  fill: rgba(0, 193, 248, 1);
+    fill: rgba(0, 193, 248, 1);
 }
 .double-weaknesses-node {
-  fill: rgba(0, 255, 44, 1);
-  border-color: rgba(0, 255, 44, 1);
+    fill: rgba(0, 255, 44, 1);
+    border-color: rgba(0, 255, 44, 1);
+}
+.double-resists {
+    stroke: rgba(0, 255, 44, 1);
+    border-color: rgba(255, 72, 0, 1);
 }
 .strengths-node {
-  fill: rgba(255, 204, 0, 1);
+    fill: rgba(255, 204, 0, 1);
 }
 .double-strengths-node {
-  fill: rgba(255, 72, 0, 1);
-  border-color: rgba(255, 72, 0, 1);
+    fill: rgba(255, 72, 0, 1);
+    border-color: rgba(255, 72, 0, 1);
+}
+.double-damage {
+    stroke: rgba(255, 72, 0, 1);
+    border-color: rgba(255, 72, 0, 1);
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 0;
+    }
 }
